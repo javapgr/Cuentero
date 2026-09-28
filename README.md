@@ -36,15 +36,11 @@ El tema claro u oscuro sale de `useColorScheme()` del sistema.
 
 ## Instalar en el celular
 
-APK de Android. Ábrelo en Chrome del teléfono y toca **Install**. No pide cuenta de Expo.
-
-https://expo.dev/accounts/bit_101011/projects/cuentero/builds/adf92f38-fe62-45c1-b9cb-0572572ea264
-
-El archivo directo es:
+APK de Android, unas 92 MB. Copia este enlace completo en Chrome del teléfono. La descarga empieza sola. No es la página de Expo y no pide correo.
 
 https://expo.dev/artifacts/eas/dfv0TtildKPdlga1zHDfez5jyYnLiY_vduLxC33fdys.apk
 
-Si el celular pide permiso, activa instalar aplicaciones de origen desconocido.
+Si WhatsApp parte el enlace, no lo abras desde la vista previa. Pégalo entero en la barra de Chrome. Si el celular pide permiso, activa instalar aplicaciones de origen desconocido.
 
 ## Desarrollo
 
