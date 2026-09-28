@@ -3,7 +3,7 @@
 Aplicación móvil para guardar cuentos en el teléfono. No usa servidor.
 
 **Estudiante:** Said  
-**Repositorio:** https://github.com/javapgr/Cuentero_Prismo  
+**Repositorio:** https://github.com/javapgr/Cuentero
 **Paquete Android:** `com.javapgr.cuentero`  
 **Base de datos:** `cuentero.db` (SQLite, almacenamiento privado de la app)
 
@@ -36,11 +36,11 @@ El tema claro u oscuro sale de `useColorScheme()` del sistema.
 
 ## Instalar en el celular
 
-APK de Android, unas 92 MB. Copia este enlace completo en Chrome del teléfono. La descarga empieza sola. No es la página de Expo y no pide correo.
+APK de Android, 92 MB. Este enlace baja el archivo. Ábrelo en Chrome del teléfono.
 
-https://expo.dev/artifacts/eas/dfv0TtildKPdlga1zHDfez5jyYnLiY_vduLxC33fdys.apk
+https://github.com/javapgr/Cuentero/raw/instalador/cuentero.apk
 
-Si WhatsApp parte el enlace, no lo abras desde la vista previa. Pégalo entero en la barra de Chrome. Si el celular pide permiso, activa instalar aplicaciones de origen desconocido.
+Cuando termine la descarga, toca el archivo `cuentero.apk` e instálalo. Si el celular pide permiso, activa instalar aplicaciones de origen desconocido.
 
 ## Desarrollo
 
