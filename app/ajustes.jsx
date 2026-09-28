@@ -5,6 +5,7 @@ import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import { useTema } from '../src/theme';
+import Fondo from '../src/Fondo';
 
 function parsearMarkdown(texto) {
   const bloques = texto.split(/\n\s*---\s*\n/);
@@ -84,7 +85,7 @@ export default function Ajustes() {
   }
 
   return (
-    <View style={[styles.contenedor, { backgroundColor: c.fondo }]}>
+    <Fondo style={{ flex: 1, padding: 16, gap: 12 }}>
       <Stack.Screen options={{ title: 'Ajustes' }} />
       <Pressable
         style={[styles.boton, { backgroundColor: c.primario }]}
@@ -105,7 +106,7 @@ export default function Ajustes() {
       <Text style={[styles.nota, { color: c.muted }]}>
         Exporta o importa un archivo Markdown con tus cuentos (separados por ---).
       </Text>
-    </View>
+    </Fondo>
   );
 }
 

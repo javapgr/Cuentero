@@ -26,6 +26,14 @@ import {
   setAudioModeAsync,
 } from 'expo-audio';
 import { useTema } from '../../src/theme';
+import Fondo from '../../src/Fondo';
+
+function mismaLista(a, b) {
+  if (a.length !== b.length) return false;
+  const x = [...a].sort((n, m) => n - m);
+  const y = [...b].sort((n, m) => n - m);
+  return x.every((valor, i) => valor === y[i]);
+}
 
 function contarPalabras(texto) {
   const limpio = (texto || '').trim();
@@ -47,9 +55,12 @@ export default function Editor() {
   const [listo, setListo] = useState(esNuevo);
   const [etiquetas, setEtiquetas] = useState([]);
   const [seleccionadas, setSeleccionadas] = useState([]);
+  const [etiquetasOriginal, setEtiquetasOriginal] = useState([]);
   const [lugares, setLugares] = useState([]);
   const [lugarId, setLugarId] = useState(null);
+  const [lugarOriginal, setLugarOriginal] = useState(null);
   const [audioUri, setAudioUri] = useState(null);
+  const [audioOriginal, setAudioOriginal] = useState(null);
   const [cuentoId, setCuentoId] = useState(esNuevo ? null : Number(id));
   const permitiendoSalir = useRef(false);
   const audioRecorder = useAudioRecorder({
@@ -60,7 +71,12 @@ export default function Editor() {
   const player = useAudioPlayer(audioUri ? { uri: audioUri } : null);
 
   const hayCambios =
-    listo && (titulo !== tituloOriginal || cuerpo !== cuerpoOriginal);
+    listo &&
+    (titulo !== tituloOriginal ||
+      cuerpo !== cuerpoOriginal ||
+      !mismaLista(seleccionadas, etiquetasOriginal) ||
+      lugarId !== lugarOriginal ||
+      (audioUri || null) !== (audioOriginal || null));
 
   useEffect(() => {
     async function meta() {
@@ -92,13 +108,17 @@ export default function Editor() {
         setTituloOriginal(fila.titulo);
         setCuerpoOriginal(fila.cuerpo);
         setAudioUri(fila.audio || null);
+        setAudioOriginal(fila.audio || null);
         setLugarId(fila.lugar_id || null);
+        setLugarOriginal(fila.lugar_id || null);
       }
       const links = await db.getAllAsync(
         'SELECT etiqueta_id FROM cuento_etiqueta WHERE cuento_id = ?',
         [Number(id)]
       );
-      setSeleccionadas(links.map((l) => l.etiqueta_id));
+      const marcas = links.map((l) => l.etiqueta_id);
+      setSeleccionadas(marcas);
+      setEtiquetasOriginal(marcas);
       setCuentoId(Number(id));
       setListo(true);
     }
@@ -170,6 +190,9 @@ export default function Editor() {
       await guardarEtiquetas(idActual);
       setTituloOriginal(limpio);
       setCuerpoOriginal(cuerpo);
+      setEtiquetasOriginal(seleccionadas);
+      setLugarOriginal(lugarId);
+      setAudioOriginal(audioUri || null);
       permitiendoSalir.current = true;
       router.replace(`/cuento/${idActual}`);
       return;
@@ -183,6 +206,9 @@ export default function Editor() {
     await guardarEtiquetas(idActual);
     setTituloOriginal(limpio);
     setCuerpoOriginal(cuerpo);
+    setEtiquetasOriginal(seleccionadas);
+    setLugarOriginal(lugarId);
+    setAudioOriginal(audioUri || null);
     if (!silencioso) {
       permitiendoSalir.current = true;
       router.back();
@@ -261,13 +287,14 @@ export default function Editor() {
 
   return (
     <KeyboardAvoidingView
-      style={[styles.contenedor, { backgroundColor: c.fondo }]}
+      style={styles.contenedor}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
+      <Fondo>
       <Stack.Screen
         options={{ title: esNuevo && !cuentoId ? 'Nuevo cuento' : 'Editar cuento' }}
       />
-      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 24 }}>
+      <ScrollView contentContainerStyle={{ gap: 12, padding: 16, paddingBottom: 24 }}>
         <TextInput
           style={[
             styles.titulo,
@@ -298,7 +325,7 @@ export default function Editor() {
           multiline
           textAlignVertical="top"
         />
-        <Text style={[styles.palabras, { color: c.muted }]}>
+        <Text style={[styles.palabras, { color: c.primario }]}>
           {palabras} {palabras === 1 ? 'palabra' : 'palabras'}
           {hayCambios ? ' · autoguardado en 3 s…' : ''}
         </Text>
@@ -409,12 +436,13 @@ export default function Editor() {
           </Pressable>
         )}
       </ScrollView>
+      </Fondo>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  contenedor: { flex: 1, padding: 16 },
+  contenedor: { flex: 1 },
   titulo: {
     fontSize: 18,
     fontWeight: '600',

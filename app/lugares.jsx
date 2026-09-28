@@ -11,6 +11,7 @@ import {
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useTema } from '../src/theme';
+import Fondo from '../src/Fondo';
 
 export default function Lugares() {
   const db = useSQLiteContext();
@@ -19,6 +20,7 @@ export default function Lugares() {
   const [grupos, setGrupos] = useState([]);
   const [recarga, setRecarga] = useState(0);
   const [formulario, setFormulario] = useState(false);
+  const [editandoId, setEditandoId] = useState(null);
   const [comunidad, setComunidad] = useState('');
   const [rio, setRio] = useState('');
   const [quebrada, setQuebrada] = useState('');
@@ -62,9 +64,26 @@ export default function Lugares() {
 
   function cerrarFormulario() {
     setFormulario(false);
+    setEditandoId(null);
     setComunidad('');
     setRio('');
     setQuebrada('');
+  }
+
+  function empezarNuevo() {
+    setEditandoId(null);
+    setComunidad('');
+    setRio('');
+    setQuebrada('');
+    setFormulario(true);
+  }
+
+  function empezarEdicion(lugar) {
+    setEditandoId(lugar.id);
+    setComunidad(lugar.comunidad);
+    setRio(lugar.rio || '');
+    setQuebrada(lugar.quebrada || '');
+    setFormulario(true);
   }
 
   async function guardarLugar() {
@@ -75,10 +94,17 @@ export default function Lugares() {
     }
     setGuardando(true);
     try {
-      await db.runAsync(
-        'INSERT INTO lugar (comunidad, rio, quebrada) VALUES (?, ?, ?)',
-        [nombre, rio.trim(), quebrada.trim()]
-      );
+      if (editandoId) {
+        await db.runAsync(
+          'UPDATE lugar SET comunidad = ?, rio = ?, quebrada = ? WHERE id = ?',
+          [nombre, rio.trim(), quebrada.trim(), editandoId]
+        );
+      } else {
+        await db.runAsync(
+          'INSERT INTO lugar (comunidad, rio, quebrada) VALUES (?, ?, ?)',
+          [nombre, rio.trim(), quebrada.trim()]
+        );
+      }
       cerrarFormulario();
       setRecarga((n) => n + 1);
     } finally {
@@ -86,8 +112,30 @@ export default function Lugares() {
     }
   }
 
+  function pedirBorrar(lugar) {
+    Alert.alert(
+      'Eliminar lugar',
+      `¿Eliminar ${lugar.comunidad}? Los cuentos quedan sin lugar asignado.`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: () => borrarLugar(lugar.id),
+        },
+      ]
+    );
+  }
+
+  async function borrarLugar(id) {
+    await db.runAsync('UPDATE cuento SET lugar_id = NULL WHERE lugar_id = ?', [id]);
+    await db.runAsync('DELETE FROM lugar WHERE id = ?', [id]);
+    if (editandoId === id) cerrarFormulario();
+    setRecarga((n) => n + 1);
+  }
+
   return (
-    <View style={[styles.contenedor, { backgroundColor: c.fondo }]}>
+    <Fondo>
       <Stack.Screen options={{ title: 'Lugares' }} />
       <FlatList
         data={grupos}
@@ -101,7 +149,9 @@ export default function Lugares() {
                 { backgroundColor: c.tarjeta, borderColor: c.borde },
               ]}
             >
-              <Text style={[styles.titulo, { color: c.texto }]}>Nuevo lugar</Text>
+              <Text style={[styles.titulo, { color: c.texto }]}>
+                {editandoId ? 'Editar lugar' : 'Nuevo lugar'}
+              </Text>
               <TextInput
                 value={comunidad}
                 onChangeText={setComunidad}
@@ -152,7 +202,7 @@ export default function Lugares() {
             </View>
           ) : (
             <Pressable
-              onPress={() => setFormulario(true)}
+              onPress={empezarNuevo}
               style={[styles.accion, { backgroundColor: c.primario, alignSelf: 'flex-start' }]}
             >
               <Text style={{ color: c.primarioTexto, fontWeight: '600' }}>
@@ -173,9 +223,21 @@ export default function Lugares() {
               { backgroundColor: c.tarjeta, borderColor: c.borde },
             ]}
           >
-            <Text style={[styles.titulo, { color: c.texto }]}>
-              {item.comunidad}
-            </Text>
+            <View style={styles.cabecera}>
+              <Text style={[styles.titulo, { color: c.texto, flex: 1 }]}>
+                {item.comunidad}
+              </Text>
+              {item.id !== 0 && (
+                <View style={styles.filaCorta}>
+                  <Pressable onPress={() => empezarEdicion(item)} hitSlop={8}>
+                    <Text style={{ color: c.primario, fontWeight: '600' }}>Editar</Text>
+                  </Pressable>
+                  <Pressable onPress={() => pedirBorrar(item)} hitSlop={8}>
+                    <Text style={{ color: c.peligro, fontWeight: '600' }}>Eliminar</Text>
+                  </Pressable>
+                </View>
+              )}
+            </View>
             {(item.rio || item.quebrada) && (
               <Text style={{ color: c.muted, marginBottom: 8 }}>
                 {[item.rio && `Río ${item.rio}`, item.quebrada]
@@ -199,7 +261,7 @@ export default function Lugares() {
           </View>
         )}
       />
-    </View>
+    </Fondo>
   );
 }
 
@@ -207,6 +269,13 @@ const styles = StyleSheet.create({
   contenedor: { flex: 1 },
   bloque: { borderRadius: 12, padding: 16, borderWidth: 1 },
   titulo: { fontSize: 17, fontWeight: '600', marginBottom: 4 },
+  cabecera: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  filaCorta: { flexDirection: 'row', gap: 12 },
   campo: {
     borderWidth: 1,
     borderRadius: 10,

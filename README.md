@@ -1,95 +1,79 @@
 # Cuentero
 
-Archivo personal de cuentos de la selva amazónica.
-
-App móvil con React Native y Expo. Los cuentos se guardan en SQLite dentro del celular (sin internet ni servidor).
+Aplicación móvil para guardar cuentos en el teléfono. No usa servidor.
 
 **Estudiante:** Said  
-**Repo:** https://github.com/javapgr/Cuentero_Prismo
+**Repositorio:** https://github.com/javapgr/Cuentero_Prismo  
+**Paquete Android:** `com.javapgr.cuentero`  
+**Base de datos:** `cuentero.db` (SQLite, almacenamiento privado de la app)
 
-## Interfaces de usuario
+## Stack
 
-### 1. Lista (`/`)
+| Pieza | Versión / uso |
+| --- | --- |
+| Expo | SDK 57 |
+| React | 19.2 |
+| React Native | 0.86 |
+| Expo Router | Rutas en `app/` (`/`, `/cuento/[id]`, `/ajustes`, `/lugares`) |
+| expo-sqlite | CRUD de cuentos, etiquetas y lugares. Consultas con `?` |
+| expo-audio | Grabar y reproducir la versión oral |
+| expo-file-system + expo-sharing | Exportar `cuentos.md` |
+| expo-document-picker | Importar Markdown |
 
-Pantalla principal al abrir la app.
+El tema claro u oscuro sale de `useColorScheme()` del sistema.
 
-- Título **Cuentero (N)** con contador de cuentos (**T1**)
-- Buscador por título en SQL (**T6**)
-- Chips de etiquetas míticas para filtrar (**T8**)
-- Tarjetas con título, vista previa (~80 letras) (**T3**) y fecha
-- Estrella de favorito; los favoritos van primero (**T7**)
-- Botón **+** para crear un cuento nuevo
-- Accesos en la cabecera: **Lugares** y **Ajustes**
+## Qué hace
 
-### 2. Editor (`/cuento/[id]` o `/cuento/nuevo`)
+- Lista los cuentos. La cabecera dice **Cuentero**. Debajo del buscador muestra el total: **3 cuentos**.
+- Filtra el título en SQL: `WHERE titulo LIKE ?`.
+- Filtra por etiqueta (`etiqueta`, `cuento_etiqueta`).
+- Ordena favoritos primero (`favorito DESC`).
+- Muestra una vista previa de unas 80 letras.
+- Editor: contador de palabras, alerta si sales con cambios, autoguardado a los 3 segundos. Etiquetas, lugar y audio entran en ese control.
+- Lugares: alta, edición y borrado. Al borrar, los cuentos quedan con `lugar_id` nulo.
+- Ajustes: exportar e importar Markdown separado por `---`.
+- Fondo: textura en `assets/fondo-kene-lineas.png`.
 
-- Campos de título y cuerpo
-- Contador de palabras en vivo (**T2**)
-- Si hay cambios y tocas atrás: alerta para descartar (**T4**)
-- Autoguardado a los 3 segundos sin tocar Guardar (**T10**)
-- Chips de etiquetas (**T8**)
-- Selector de lugar (**T12**)
-- Grabar / reproducir audio oral (**T11**, `expo-audio`)
-- Botones Guardar y Borrar
+## Instalar en el celular
 
-### 3. Ajustes (`/ajustes`)
+APK de Android. Ábrelo en Chrome del teléfono y toca **Install**. No pide cuenta de Expo.
 
-- Exportar todos los cuentos a Markdown (**T5**)
-- Importar desde un archivo Markdown (**T13**)
-- **Tema Claro / Oscuro / Sistema** (**T9**) — *pendiente de activar en código si aún no ves los botones; di “dale en Agent mode”*
+https://expo.dev/accounts/bit_101011/projects/cuentero/builds/751be58e-a001-4176-86d1-949c86cc9f81
 
-### 4. Lugares (`/lugares`)
+Si el celular pide permiso, activa instalar aplicaciones de origen desconocido.
 
-- Cuentos agrupados por comunidad, río y quebrada (**T12**)
-
-## Tareas resueltas
-
-### Nivel 1
-T1 · T2 · T3 · T4 · T5
-
-### Nivel 2
-T6 · T7 · T8 · T9 · T10
-
-### Nivel 3
-T11 · T12 · T13 · T14 (config EAS; generar APK con el comando de abajo)
-
-## Ejecutar
+## Desarrollo
 
 ```bash
-npm install --legacy-peer-deps
-npx expo start -c
+npm install
+npx expo start
 ```
 
-Escanea el QR con Expo Go.
+Misma red Wi-Fi: escanea el QR con Expo Go.
 
-## Publicar APK (T14)
+Otra red:
+
+```bash
+npx expo start --tunnel
+```
+
+Generar otro APK:
 
 ```bash
 npx eas-cli@latest login
 npm run build:apk
 ```
 
+El perfil `preview` de `eas.json` produce un APK de distribución interna.
+
 ## Capturas
 
-Pantallazos del celular con Expo Go.
+Ancho fijo de 220 px para que en GitHub no ocupen toda la página.
 
-### Lista
-
-![Lista](docs/capturas/lista.jpeg)
-
-### Editor
-
-![Editor](docs/capturas/editor.jpeg)
-
-### Ajustes
-
-![Ajustes](docs/capturas/ajustes.jpeg)
-
-### Favorito
-
-![Favorito](docs/capturas/favorito.jpeg)
-
-### Lugares
-
-![Lugares](docs/capturas/lugares.jpeg)
-
+<p>
+  <img src="docs/capturas/lista.jpeg" alt="Lista" width="220" />
+  <img src="docs/capturas/favorito.jpeg" alt="Favorito" width="220" />
+  <img src="docs/capturas/editor.jpeg" alt="Editor" width="220" />
+  <img src="docs/capturas/ajustes.jpeg" alt="Ajustes" width="220" />
+  <img src="docs/capturas/lugares.jpeg" alt="Lugares" width="220" />
+</p>

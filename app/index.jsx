@@ -11,6 +11,7 @@ import {
 import { Stack, useRouter, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useTema } from '../src/theme';
+import Fondo from '../src/Fondo';
 
 export default function Lista() {
   const db = useSQLiteContext();
@@ -99,10 +100,10 @@ export default function Lista() {
   }
 
   return (
-    <View style={[styles.contenedor, { backgroundColor: c.fondo }]}>
+    <Fondo>
       <Stack.Screen
         options={{
-          title: `Cuentero (${cuentos.length})`,
+          title: 'Cuentero',
           headerRight: () => (
             <View style={{ flexDirection: 'row', gap: 12 }}>
               <Pressable onPress={() => router.push('/lugares')}>
@@ -129,9 +130,13 @@ export default function Lista() {
         value={busqueda}
         onChangeText={setBusqueda}
       />
+      <Text style={[styles.contador, { color: c.primario }]}>
+        {cuentos.length} {cuentos.length === 1 ? 'cuento' : 'cuentos'}
+      </Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
+        style={styles.chipsScroll}
         contentContainerStyle={styles.chips}
       >
         <Pressable
@@ -230,7 +235,7 @@ export default function Lista() {
       >
         <Text style={[styles.botonTexto, { color: c.primarioTexto }]}>+</Text>
       </Pressable>
-    </View>
+    </Fondo>
   );
 }
 
@@ -245,8 +250,25 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     fontSize: 15,
   },
-  chips: { paddingHorizontal: 16, paddingTop: 10, gap: 8 },
-  chip: { borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6 },
+  contador: {
+    marginHorizontal: 16,
+    marginTop: 8,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  chipsScroll: { flexGrow: 0 },
+  chips: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 8,
+    alignItems: 'center',
+  },
+  chip: {
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    alignSelf: 'flex-start',
+  },
   tarjeta: { borderRadius: 12, padding: 16, borderWidth: 1 },
   tarjetaCabecera: {
     flexDirection: 'row',
