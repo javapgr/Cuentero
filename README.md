@@ -72,8 +72,11 @@ Ancho fijo de 220 px para que en GitHub no ocupen toda la página.
 
 <p>
   <img src="docs/capturas/lista.jpeg" alt="Lista" width="220" />
-  <img src="docs/capturas/favorito.jpeg" alt="Favorito" width="220" />
+  <img src="docs/capturas/lista-orden.jpeg" alt="Lista de cuentos" width="220" />
+  <img src="docs/capturas/filtro.jpeg" alt="Filtro por etiqueta" width="220" />
   <img src="docs/capturas/editor.jpeg" alt="Editor" width="220" />
-  <img src="docs/capturas/ajustes.jpeg" alt="Ajustes" width="220" />
+  <img src="docs/capturas/editor-audio.jpeg" alt="Audio y autoguardado" width="220" />
+  <img src="docs/capturas/nuevo.jpeg" alt="Nuevo cuento" width="220" />
   <img src="docs/capturas/lugares.jpeg" alt="Lugares" width="220" />
+  <img src="docs/capturas/instalacion.jpeg" alt="Instalación del APK" width="220" />
 </p>
